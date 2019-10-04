@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var Video = require('../model/video.js');
 var moment = require('moment');
+var fs = require('fs');
 
 router.get('/', function(req, res, next) {
 
@@ -42,7 +43,55 @@ router.get('/pages', function(req, res, next) {
 });
 
 router.get('/*.mp4', function(req, res, next) {
+  const file = '/home/bear/video'+decodeURI(req.path);
+  console.log(file);
+  if( !fs.existsSync( file ) ) {
+    //not found file...
+    return;
+  }
 
+  fs.stat(file, ( err, stat ) => {
+    if( err ) {
+      //not found file
+      if( err.code === 'ENOENT' ) {
+        return;
+      }
+    }
+
+    let start = 0,
+        end = stat.size,
+        total = 0,
+        contentLength = stat.size;
+    let contentRange = false;
+    const range = req.header('Range');
+    if( range ) {
+      const position = range.replace(/bytes=/, "").split("-");
+      start = parseInt(position[0], 10);
+      total = stat.size;
+      end = position[1]? parseInt(position[1], 10) : total - 1;
+      contentRange = true;
+      contentLength = ( end - start ) + 1;
+    } 
+
+    if( start <= end ) {
+      if( contentRange ) {
+        res.status(206).set({
+          "Accept-Ranges":"bytes",
+          "Content-Length":contentLength,
+          "Content-Type":"video/mp4",
+          "Content-Range":"bytes "+start+"-"+end+"/"+total
+        }).end();
+      } else {
+        res.status(200).set({
+          "Accept-Ranges":"bytes",
+          "Content-Length":contentLength,
+          "Content-Type":"video/mp4"
+        }).end();
+      }
+    } else {
+      res.status(403).end();
+    }
+  });
 });
 
 module.exports = router;

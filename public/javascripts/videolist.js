@@ -32,7 +32,7 @@ function makeRow(json) {
   divTitle.classList.add('title_board');
 
   let a_tag = document.createElement('a');
-  a_tag.href = encodeURI('/video-play?video='+json.path);
+  //a_tag.href = encodeURI('/video-play?video='+json.path);
   a_tag.text = json.title;
   divTitle.appendChild(a_tag);
 

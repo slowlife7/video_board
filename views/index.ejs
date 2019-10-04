@@ -20,7 +20,6 @@
         height: 700px;
         margin: 0 auto;
         line-height: 700px;
-        overflow: hidden;
       }
 
       header {
@@ -51,7 +50,7 @@
         margin: 0 auto;
         border: 1px solid #cccccc;
         background-color: #f8f8f8;
-       
+        overflow-y:auto; 
       }
 
       section .section_content .section_board li {
@@ -68,10 +67,11 @@
       }
 
       section .section_content .section_board .title_board {
-        width: 370px;
+        width: 320px;
         padding-left : 20px;
         border-right: 0;
         border-left : 5px solid lightblue;
+        font-size: 0.8em;
       }
 
       section .section_content .section_board .summary_board {
@@ -119,6 +119,13 @@
         text-align: center;
       }
 
+      #section_header > #video {
+            display: none;
+            height:350px;
+            width:700px;
+            margin:0 auto;
+            line-height: 0;
+      }
 
     </style>
   </head>
@@ -138,15 +145,22 @@
             <input type="text"/>
             <button>search</button>
           </div>
+
+          <div id="section_header">
+            <div id="video">
+
+            </div>
+          </div>
+
           <div class="section_board">
-          <ul>
-            <li>
-                <div class="title_board"><a href="#">TITLE</a></div>
-                <div class="summary_board">SUMMARY</div>
-                <div class="author_board">AUTHOR</div>
-            </li>
-          </ul>
-        </div>
+            <ul>
+              <li>
+                  <div class="title_board"><a href="#">TITLE</a></div>
+                  <div class="summary_board">SUMMARY</div>
+                  <div class="author_board">AUTHOR</div>
+              </li>
+            </ul>
+          </div>
         </div>
       </section>
 
@@ -166,5 +180,40 @@
       paintVideoList( httpGetRequest, '/videos' );
       paintPageList( 1, 5, 13, httpGetRequest, paintVideoList);
     });
+
+    (function() {
+        let toggle = false;
+        const content_section = document.querySelector('.section_board');
+        console.dir(content_section);
+        content_section.addEventListener('click', function(event) {
+            const video = document.querySelector('#section_header > #video');
+            const target = event.target;
+            if( toggle ) {
+                video.style.display = 'none';
+                while(video.firstChild) {
+                    video.removeChild(video.firstChild);
+                }
+                toggle = false;
+            } else {
+                video.style.display = 'block';
+                toggle = true;
+                video.appendChild(make_video_tag(encodeURI(target.innerText+'.mp4')));
+                const div = document.createElement('div');
+                video.appendChild(div);
+            } 
+        });
+    })();
+
+    function make_video_tag(src) {
+        const video = document.createElement('video');
+        video.setAttribute('controls', '');
+        video.setAttribute('width', '700');
+        const source = document.createElement('source');
+        source.setAttribute('src', '/videos/'+src);
+        source.setAttribute('type', 'video/mp4');
+        video.appendChild(source);
+        return video;
+    }
+
   </script>
 </html>
