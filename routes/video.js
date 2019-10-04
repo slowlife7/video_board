@@ -75,19 +75,31 @@ router.get('/*.mp4', function(req, res, next) {
 
     if( start <= end ) {
       if( contentRange ) {
+	console.log('206');
         res.status(206).set({
           "Accept-Ranges":"bytes",
           "Content-Length":contentLength,
           "Content-Type":"video/mp4",
           "Content-Range":"bytes "+start+"-"+end+"/"+total
-        }).end();
+        });
       } else {
         res.status(200).set({
           "Accept-Ranges":"bytes",
           "Content-Length":contentLength,
           "Content-Type":"video/mp4"
-        }).end();
+        });
       }
+      let st = fs.createReadStream(file, { start : start, end:end})
+		.on('end', function() {
+			console.log('Stream done');
+			res.end();
+		})
+		.on('error', function(err) {
+			console.error(err);
+			res.end();
+		
+		})
+		.pipe(res, {end:true});
     } else {
       res.status(403).end();
     }
