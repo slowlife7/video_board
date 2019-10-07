@@ -2,23 +2,72 @@ function calculatePageList( pageNo, paginationCount, totalPage ) {
   let pageGroup = Math.ceil( pageNo / paginationCount );
   let lastPage = pageGroup * paginationCount;
 
-
-
   const firstPage = lastPage - paginationCount + 1;
-  console.log('firstPage:'+firstPage);
   if(lastPage > totalPage) {
     lastPage = totalPage;
   }
 
-  console.log('first:'+firstPage);
-  console.log('lastPage:'+lastPage);
-  console.log('pagination:'+paginationCount);
   return {
     prev: ( firstPage - 1 ) < 0 ? 0 : firstPage - 1,
     first: firstPage,
     last: lastPage,
     next: ( lastPage < totalPage )? lastPage + 1 : 0
   }
+}
+
+function makeLists ( pageNo, paginationCount, totalPage) {
+  let pageGroup = Math.ceil( totalPage / 14 );
+  const calculatedPageList = calculatePageList( pageNo, paginationCount, pageGroup );
+
+
+
+
+};
+
+
+
+function paintList( pageNo, paginationCount, totalPage, videolist, query, title ) {
+  const wrapperPageList = document.querySelector( '.pagination ul' );
+
+  removePageListBox(wrapperPageList);
+
+  let pageGroup = Math.ceil( totalPage / 14 );
+  const calculatedPageList = calculatePageList( pageNo, paginationCount, pageGroup );
+  console.log(JSON.stringify(calculatedPageList));
+  if( calculatedPageList.prev ) {
+
+    const pageBox = makePageListBox({
+      id: 'prev',
+      text: '<<',
+      number: calculatedPageList.prev
+    });
+
+    wrapperPageList.appendChild(pageBox);
+  }
+
+  for( let i = calculatedPageList.first; i <= calculatedPageList.last; i++ ) {
+
+    const pageBox = makePageListBox({
+      id: i,
+      text: i,
+      number: i
+    });
+
+    wrapperPageList.appendChild(pageBox);
+  }
+
+  if( calculatedPageList.next ) {
+
+    const pageBox = makePageListBox({
+      id: 'next',
+      text: '>>',
+      number: calculatedPageList.next
+    });
+    console.log('next');
+    wrapperPageList.appendChild(pageBox);
+  }
+
+  return wrapperPageList.childNodes;
 }
 
 function paintPageList( pageNo, paginationCount, totalPage, query, videolist ) {
@@ -91,6 +140,7 @@ function makePageListBox( json ) {
 
   aTag.addEventListener('click', json.callback);
 
+  liTag.setAttribute('data-number', json.number);
   liTag.appendChild(aTag);
   return liTag;
 }

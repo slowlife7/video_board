@@ -180,8 +180,28 @@
       //paintVideoList( httpGetRequest, 'http://localhost:3000/videos' );
       paintVideoList( httpGetRequest, '/videos' );
       paintPageList( 1, 5, 13, httpGetRequest, paintVideoList);
-    });
 
+      const search_click = document.querySelector('.section_search > button');
+        search_click.addEventListener('click', function(event) {
+        const search_txt = document.querySelector('.section_search > input');
+        console.dir(search_txt.value);
+
+        httpGetRequest('/videos/'+search_txt.value)
+                .then( (result) => {
+                  paintVideos(result);
+                  const pagination = paintList(1,5,result.search_count);
+                  for( let i = 0; i < pagination.length; i++ ) {
+                    pagination[i].addEventListener('click', function() {
+                      httpGetRequest('/videos/'+search_txt.value+'?page_no='+(i+1)+'&count_per_page=14')
+                      .then( (result) => {
+                        paintVideos(result);
+                      });
+                    });
+                  }
+                });
+        });
+    });
+    
     (function() {
         let toggle = false;
         const content_section = document.querySelector('.section_board');

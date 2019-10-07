@@ -1,3 +1,12 @@
+
+function paintVideos(items) {
+  let boards = document.querySelector('.section_board ul');
+  clearListUnderParent(boards);
+    for( let i = 0; i < items.items.length; i++ ) {
+      boards.appendChild(makeRow(items.items[i]));
+    } 
+}
+
 function paintVideoList(query, cmd) {
 
   console.warn(cmd);
@@ -6,6 +15,9 @@ function paintVideoList(query, cmd) {
     console.log(response);
     let boards = document.querySelector('.section_board ul');
     clearListUnderParent(boards);
+
+    console.dir(boards);
+    console.dir(response);
 
     for( let i = 0; i < response.length; i++ ) {
       boards.appendChild(makeRow(response[i]));
